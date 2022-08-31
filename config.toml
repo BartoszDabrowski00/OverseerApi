@@ -1,0 +1,17 @@
+[server]
+port=9000
+
+[mongo]
+connection_string="mongodb://localhost:27019/overseer"
+username="usr"
+password="pwd"
+
+[celery]
+broker_url = "localhost:5672"
+broker_login = "guest"
+broker_password = "guest"
+redis_url = "localhost"
+redis_port = 6379
+redis_db = 0
+backend = "redis"
+serializer = "pickle"
