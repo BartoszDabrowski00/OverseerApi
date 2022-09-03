@@ -14,7 +14,7 @@ class TestConfig(unittest.TestCase):
             }
         }
         cfg = Config()
-        cfg.config = mock_cfg
+        Config.config = mock_cfg
 
         self.assertEqual(cfg.get('server', 'port'), 123)
         self.assertEqual(cfg.get('server', 'debug'), True),

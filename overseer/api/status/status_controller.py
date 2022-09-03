@@ -12,4 +12,4 @@ class Status(Resource):
 
     @ns.marshal_with(model, code=HTTPStatus.OK)
     def get(self):
-        return {"status": "running"}, HTTPStatus.OK
+        return {'status': 'running'}, HTTPStatus.OK
