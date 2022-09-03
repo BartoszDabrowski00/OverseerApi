@@ -1,10 +1,15 @@
-from flask_restx import Resource, Namespace
+from flask_restx import Resource
+from flask_restx._http import HTTPStatus
 
-status_namespace = Namespace('status')
+from overseer.api.flask_restx import api
+from overseer.api.status.status_models import model
+
+ns = api.namespace('status')
 
 
-@status_namespace.route('/')
+@ns.route('/')
 class Status(Resource):
 
+    @ns.marshal_with(model, code=HTTPStatus.OK)
     def get(self):
-        return {"status": "running"}
+        return {'status': 'running'}, HTTPStatus.OK

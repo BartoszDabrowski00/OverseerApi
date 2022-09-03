@@ -5,13 +5,11 @@ import toml
 
 class Config:
     CONFIG_PATH = os.getenv('OVERSEER_API_CONFIG_PATH', 'config.toml')
+    config = None
 
     @classmethod
-    def __init__(cls):
-        cls.config = toml.load(cls.CONFIG_PATH)
+    def get(cls, section, key):
+        if not cls.config:
+            cls.config = toml.load(cls.CONFIG_PATH)
 
-    def get(self, section, key):
-        return self.config.get(section, {}).get(key, None)
-
-
-cfg = Config()
+        return cls.config.get(section, {}).get(key, None)
