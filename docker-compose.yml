@@ -11,13 +11,6 @@ services:
     ports:
       - "27017:27017"
 
-  redis:
-    image: redis
-    container_name: 'overseer_redis'
-    restart: always
-    ports:
-      - "6379:6379"
-
   rabbitmq:
     image: rabbitmq:3-management
     container_name: 'overseer_rabbitmq'
