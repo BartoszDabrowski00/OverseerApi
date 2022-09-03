@@ -9,7 +9,7 @@ class Config:
 
     @classmethod
     def get(cls, section, key):
-        if not cls.config:
+        if cls.config is None:
             cls.config = toml.load(cls.CONFIG_PATH)
 
         return cls.config.get(section, {}).get(key, None)

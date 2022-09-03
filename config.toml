@@ -2,16 +2,21 @@
 port=9000
 
 [mongo]
-connection_string="mongodb://localhost:27019/overseer"
-username="usr"
-password="pwd"
+connection_string="mongodb://localhost:27017"
+username="root"
+password="root"
+overseer_db="overseer"
+overseer_recordings_collection="overseer_recordings"
 
-[celery]
-broker_url = "localhost:5672"
-broker_login = "guest"
-broker_password = "guest"
-redis_url = "localhost"
-redis_port = 6379
-redis_db = 0
-backend = "redis"
-serializer = "pickle"
+
+[amqp]
+host="localhost"
+port="5672"
+username="guest"
+password="guest"
+vhost="/"
+recordings_exchange="recordings"
+recordings_exchange_type="topic"
+recordings_route="new"
+recordings_new_queue="recordings_new"
+recordings_new_queue_type="quorum"

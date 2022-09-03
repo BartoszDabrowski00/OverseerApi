@@ -10,6 +10,6 @@ ns = api.namespace('status')
 @ns.route('/')
 class Status(Resource):
 
-    @ns.marshal_with(model, code=HTTPStatus.OK)
+    @ns.marshal_with(model, code=HTTPStatus.OK.value)
     def get(self):
         return {'status': 'running'}, HTTPStatus.OK
