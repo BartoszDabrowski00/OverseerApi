@@ -7,6 +7,7 @@ username="root"
 password="root"
 overseer_db="overseer"
 overseer_recordings_collection="overseer_recordings"
+overseer_users_collection="overseer_users"
 
 
 [amqp]
