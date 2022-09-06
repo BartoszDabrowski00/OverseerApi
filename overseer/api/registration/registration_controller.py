@@ -32,6 +32,4 @@ class Register(Resource):
         if not self.registration_service.register(rd["email"], rd["name"], rd["surname"], rd["password"]):
             return {'result': 'BAD REQUEST given email is already taken'}, HTTPStatus.CONFLICT
 
-
-
-        return {}
+        return {'result': 'CREATED user registered'}, HTTPStatus.CREATED

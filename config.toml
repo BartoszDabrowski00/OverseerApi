@@ -1,5 +1,6 @@
 [server]
 port=9000
+secret_key = "dev"
 
 [mongo]
 connection_string="mongodb://localhost:27017"

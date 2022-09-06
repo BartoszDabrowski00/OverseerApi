@@ -72,7 +72,7 @@ class MongoClient:
 
         if user_id is not None:
             return collection.find_one({
-                'user_id': ObjectId(user_id)
+                '_id': ObjectId(user_id)
             })
 
         return collection.find_one({
@@ -87,4 +87,3 @@ class MongoClient:
         db = cls.client.get_database(cls.overseer_db)
         collection = db.get_collection(cls.overseer_users_collection)
         return collection.find()
-
