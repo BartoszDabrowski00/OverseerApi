@@ -25,8 +25,10 @@ class AuthorizationService:
         try:
             data = jwt.decode(token, self.secret_key, algorithms=["HS256"])
             current_user = self.mongo.find_user(user_id=data['id'])
+            if current_user is None:
+                return None
 
-            if current_user is not None:
-                return data['id']
+            return data['id']
         except Exception:
             return None
+

@@ -146,19 +146,19 @@ class MongoClient:
         return collection.find()
 
     @classmethod
-    def find_user_recording(cls, user_id: str):
+    def find_user_recordings(cls, user_id: str):
         if not cls.client:
             cls.connect()
 
         db = cls.client.get_database(cls.overseer_db)
         collection = db.get_collection(cls.overseer_recordings_collection)
 
-        return collection.find_one({
-            'user_id': ObjectId(user_id)
+        return collection.find({
+            'user_id': user_id
         })
 
     @classmethod
-    def find_recording(cls, recording_id: str):
+    def find_user_recording(cls, user_id: str, recording_id: str):
         if not cls.client:
             cls.connect()
 
@@ -166,6 +166,6 @@ class MongoClient:
         collection = db.get_collection(cls.overseer_recordings_collection)
 
         return collection.find_one({
-            '_id': ObjectId(recording_id)
+            '_id': ObjectId(recording_id), 'user_id': user_id
         })
 

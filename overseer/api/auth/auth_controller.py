@@ -27,7 +27,7 @@ class Login(Resource):
 
         user_id = self.auth_service.check_if_valid_user(ld["email"], ld["password"])
         if user_id is None:
-            return {'result', 'UNAUTHORIZED Invalid email or password'}, HTTPStatus.UNAUTHORIZED
+            return {'result': 'UNAUTHORIZED Invalid email or password'}, HTTPStatus.UNAUTHORIZED
 
         token = self.authorization_service.generate_user_token(user_id)
         return {'result': token}, HTTPStatus.OK

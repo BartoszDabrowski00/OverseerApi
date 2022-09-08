@@ -17,3 +17,5 @@ class AuthenticationService:
         is_password_valid = check_password_hash(user['password'], password)
         if is_password_valid:
             return str(user['_id'])
+
+        return None

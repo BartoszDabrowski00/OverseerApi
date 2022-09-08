@@ -8,3 +8,9 @@ user_model = api.model('user reply', {
     'name': fields.String,
     'surname': fields.String,
 })
+
+subordinate_input = reqparse.RequestParser()
+subordinate_input.add_argument('x-access-token', location='headers', required=True)
+subordinate_input.add_argument('subordinate_id', type=str, required=True, location='form')
+
+
