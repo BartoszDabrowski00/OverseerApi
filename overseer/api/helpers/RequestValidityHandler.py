@@ -17,7 +17,7 @@ class RequestValidityHandler:
     def check_user_authorization(cls) -> Optional[str]:
         current_user_id = cls.authorization_service.check_if_authorized(request.headers)
         if current_user_id is None:
-            abort(401, result='UNAUTHORIZED user must be log in')
+            abort(401, result='UNAUTHORIZED user must be logged in')
 
         return current_user_id
 

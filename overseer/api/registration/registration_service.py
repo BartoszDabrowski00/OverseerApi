@@ -13,7 +13,7 @@ class RegistrationService:
             return False
 
         password_hash = generate_password_hash(password)
-        MongoClient.insert_new_user(email, name, surname, password_hash)
+        self.mongo.insert_new_user(email, name, surname, password_hash)
         return True
 
 
