@@ -1,5 +1,6 @@
 [server]
 port=9000
+secret_key = "dev"
 
 [mongo]
 connection_string="mongodb://localhost:27017"
@@ -7,6 +8,7 @@ username="root"
 password="root"
 overseer_db="overseer"
 overseer_recordings_collection="overseer_recordings"
+overseer_users_collection="overseer_users"
 
 
 [amqp]

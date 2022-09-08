@@ -1,10 +1,12 @@
 from flask import request
-from flask_restx import Resource
+from flask_restx import Resource, abort
 from flask_restx._http import HTTPStatus
 
 from overseer.api.flask_restx import api
+from overseer.api.helpers.RequestValidityHandler import RequestValidityHandler
 from overseer.api.recordings.recordings_service import RecordingsService
-from overseer.api.recordings.recordings_model import recording_input, model
+from overseer.api.recordings.recordings_model import recording_input, model, recording_model
+from overseer.api.auth.auth_model import token_header_parser
 
 ns = api.namespace('recordings')
 
@@ -29,3 +31,22 @@ class Recordings(Resource):
         self.recordings_service.send_recording_to_model(file, user_id, timestamp)
 
         return {'result': 'success'}, HTTPStatus.OK
+
+
+@ns.route('/all')
+class AllRecordings(Resource):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.recordings_service = RecordingsService()
+        self.request_validity_handler = RequestValidityHandler
+
+    @ns.marshal_with(recording_model, code=[HTTPStatus.OK.value, HTTPStatus.UNAUTHORIZED.value])
+    @ns.expect(token_header_parser)
+    def get(self):
+        self.request_validity_handler.check_user_authorization()
+        recordings = self.recordings_service.get_all_recordings()
+        if len(recordings) == 0:
+            abort(404, result="NOT FOUND there are no recordings stored in database")
+
+        return recordings, HTTPStatus.OK
