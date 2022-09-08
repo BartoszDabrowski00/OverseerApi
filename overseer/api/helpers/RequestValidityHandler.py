@@ -30,6 +30,6 @@ class RequestValidityHandler:
     def check_if_valid_id(cls, *args):
         for user_id in args:
             is_hex_str = set(user_id).issubset(string.hexdigits)
-            if len(user_id) != cls.id_valid_length or not is_hex_str    :
+            if len(user_id) != cls.id_valid_length or not is_hex_str:
                 abort(404, result='BAD REQUEST id must be 24-character hex string')
 
