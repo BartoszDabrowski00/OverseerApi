@@ -41,6 +41,19 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+  model:
+    image: overseer_model
+    container_name: 'overseer_model'
+    restart: on-failure
+    environment:
+      - RABBIT_HOST
+      - MONGO_HOST
+      - OVERSEER_API_CONFIG_PATH
+    networks:
+      - overseer_net
+    depends_on:
+      - mongo
+      - rabbitmq
 
 networks:
   overseer_net:
