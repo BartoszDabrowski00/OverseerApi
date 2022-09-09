@@ -10,6 +10,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=root
     ports:
       - "27017:27017"
+    networks:
+      - overseer_net
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -17,3 +19,29 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - overseer_net
+
+  api:
+    image: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: 'overseer_api'
+    restart: on-failure
+    environment:
+      - RABBIT_HOST
+      - MONGO_HOST
+      - OVERSEER_API_CONFIG_PATH
+    ports:
+      - "9000:9000"
+    networks:
+      - overseer_net
+    depends_on:
+      - mongo
+      - rabbitmq
+
+networks:
+  overseer_net:
+    driver: bridge
