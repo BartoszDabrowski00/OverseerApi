@@ -1,3 +1,5 @@
+import logging
+import os
 from datetime import datetime
 from typing import Optional
 
@@ -7,11 +9,13 @@ from retry import retry
 
 from overseer.utils.config.config import Config
 
+log = logging.getLogger(__name__)
+
 
 class MongoClient:
     config = Config()
     client: Optional[Client] = None
-    connection_string = config.get('mongo', 'connection_string')
+    connection_string = os.getenv('MONGO_HOST', config.get('mongo', 'connection_string'))
     username = config.get('mongo', 'username')
     password = config.get('mongo', 'password')
     overseer_db = config.get('mongo', 'overseer_db')
@@ -21,6 +25,7 @@ class MongoClient:
     @classmethod
     @retry(tries=3, delay=1)
     def connect(cls):
+        log.info(f'Trying to connect to mongo with conn string {cls.connection_string}')
         cls.client = Client(cls.connection_string, username=cls.username, password=cls.password)
 
     @classmethod
@@ -130,10 +135,10 @@ class MongoClient:
                 'connectToField': '_id',
                 'maxDepth': 0,
                 'as': "user_subordinates"
-                }
+            }
             },
             {'$project': {"user_subordinates": 1, "_id": 0}}
-            ])
+        ])
 
     @classmethod
     def find_all_recordings(cls):
@@ -168,4 +173,3 @@ class MongoClient:
         return collection.find_one({
             '_id': ObjectId(recording_id), 'user_id': user_id
         })
-
