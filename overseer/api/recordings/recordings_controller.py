@@ -17,10 +17,12 @@ class Recordings(Resource):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.recordings_service = RecordingsService()
+        self.request_validity_handler = RequestValidityHandler
 
     @ns.marshal_with(model, code=[HTTPStatus.OK.value, HTTPStatus.BAD_REQUEST.value])
     @ns.expect(recording_input)
     def post(self):
+        self.request_validity_handler.check_user_authorization()
         file = request.files.get('recording', None)
         user_id = request.args.get("user_id", None)
         timestamp = request.args.get('timestamp', None)
