@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   mongo:
-    image: mongo
+    image: mongo:5.0.12
     container_name: 'overseer_mongo'
     restart: always
     environment:
@@ -31,8 +31,8 @@ services:
     container_name: 'overseer_api'
     restart: on-failure
     environment:
-      - RABBIT_HOST
-      - MONGO_HOST
+      - RABBIT_HOST=rabbitmq
+      - MONGO_HOST=mongo
       - OVERSEER_API_CONFIG_PATH
     ports:
       - "9000:9000"
@@ -46,8 +46,8 @@ services:
     container_name: 'overseer_model'
     restart: on-failure
     environment:
-      - RABBIT_HOST
-      - MONGO_HOST
+      - RABBIT_HOST=rabbitmq
+      - MONGO_HOST=mongo
       - OVERSEER_API_CONFIG_PATH
     networks:
       - overseer_net
