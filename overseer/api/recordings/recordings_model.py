@@ -11,7 +11,6 @@ class RecordingFeatures(fields.Raw):
 
 recording_input = reqparse.RequestParser()
 recording_input.add_argument('recording', type=FileStorage, required=True, location='files')
-recording_input.add_argument('user_id', type=str, required=True)
 recording_input.add_argument('timestamp', type=str, required=True)
 recording_input.add_argument('x-access-token', location='headers', required=True)
 
