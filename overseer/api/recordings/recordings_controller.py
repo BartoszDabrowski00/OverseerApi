@@ -22,9 +22,8 @@ class Recordings(Resource):
     @ns.marshal_with(model, code=[HTTPStatus.OK.value, HTTPStatus.BAD_REQUEST.value])
     @ns.expect(recording_input)
     def post(self):
-        self.request_validity_handler.check_user_authorization()
+        user_id = self.request_validity_handler.check_user_authorization()
         file = request.files.get('recording', None)
-        user_id = request.args.get("user_id", None)
         timestamp = request.args.get('timestamp', None)
 
         if any(elem is None for elem in [file, user_id, timestamp]):
