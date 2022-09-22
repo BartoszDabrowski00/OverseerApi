@@ -27,7 +27,7 @@ class Recordings(Resource):
         timestamp = request.args.get('timestamp', None)
 
         if any(elem is None for elem in [file, user_id, timestamp]):
-            return {'result': 'BAD REQUEST All of file, user_id and timestamp fields must be provided'}, HTTPStatus.BAD_REQUEST
+            return {'result': 'BAD REQUEST Both file and timestamp fields must be provided'}, HTTPStatus.BAD_REQUEST
 
         self.recordings_service.send_recording_to_model(file, user_id, timestamp)
 
