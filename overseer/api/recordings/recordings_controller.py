@@ -13,6 +13,7 @@ ns = api.namespace('recordings')
 
 @ns.route('/new_recording')
 class Recordings(Resource):
+    WAV_FILE_TYPE = 'audio/wav'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,6 +26,9 @@ class Recordings(Resource):
         user_id = self.request_validity_handler.check_user_authorization()
         file = request.files.get('recording', None)
         timestamp = request.args.get('timestamp', None)
+
+        if file.content_type != self.WAV_FILE_TYPE:
+            return {'result': 'BAD REQUEST Audio must be in wav file format'}, HTTPStatus.BAD_REQUEST
 
         if any(elem is None for elem in [file, user_id, timestamp]):
             return {'result': 'BAD REQUEST Both file and timestamp fields must be provided'}, HTTPStatus.BAD_REQUEST
