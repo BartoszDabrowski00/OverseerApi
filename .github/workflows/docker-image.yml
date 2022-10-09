@@ -11,4 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build and push the Docker image
-      run: docker build -t bartoszdab/overseer_api:latest . && docker push bartoszdab/overseer_api:latest
+      with:
+        DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD && docker build -t bartoszdab/overseer_api:latest . && docker push bartoszdab/overseer_api:latest
