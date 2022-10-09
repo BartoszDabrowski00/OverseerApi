@@ -11,4 +11,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build and push the Docker image
-      run: docker build . --file Dockerfile --tag overseer_api:latest && docker push bartoszdab/overseer_api:latest
+      run: docker build -t bartoszdab/overseer_api:latest . && docker push bartoszdab/overseer_api:latest
