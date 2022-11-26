@@ -101,9 +101,12 @@ class Subordinates(Resource):
         if subordinate_data['subordinate_id'] is None:
             abort(400, result='BAD REQUEST specify subordinate id.')
 
-        self.request_validity_handler.check_user_authorization()
+        current_id = self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id)
         self.request_validity_handler.check_user_existence(id)
+
+        if current_id != id:
+            abort(403, result="User is not allowed to perform this operation.")
 
         subordinate = self.user_service.get_user(subordinate_data['subordinate_id'])
         if subordinate is None:
@@ -123,9 +126,12 @@ class Subordinate(Resource):
 
     @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value])
     def delete(self, id, subordinate_id):
-        self.request_validity_handler.check_user_authorization()
+        current_id = self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id, subordinate_id)
         self.request_validity_handler.check_user_existence(id)
+
+        if current_id != id:
+            abort(403, result="User is not allowed to perform this operation.")
 
         subordinate = self.user_service.get_user(subordinate_id)
 
