@@ -3,6 +3,7 @@ from flask_restx import Resource
 from flask_restx._http import HTTPStatus
 from flask_restx import abort
 
+from overseer.api.auth.rbac import AdminOrLeader, AdminOrLeaderOrOwner, AdminOrOwner, AdminOrLeaderOwner
 from overseer.api.flask_restx import api
 from overseer.api.helpers.RequestValidityHandler import RequestValidityHandler
 from overseer.api.recordings.recordings_model import recording_model
@@ -22,9 +23,10 @@ class Users(Resource):
         self.user_service = UserService()
         self.request_validity_handler = RequestValidityHandler
 
-    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value])
+    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value,
+                                       HTTPStatus.FORBIDDEN.value])
     def get(self):
-        self.request_validity_handler.check_user_authorization()
+        self.request_validity_handler.check_user_authorization(AdminOrLeader())
         users = self.user_service.get_all_users()
 
         if len(users) == 0:
@@ -44,13 +46,8 @@ class CurrentUser(Resource):
 
     @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value])
     def get(self):
-        current_user_id = self.request_validity_handler.check_user_authorization()
-        user = self.user_service.get_user(current_user_id)
-        if user is None:
-            abort(404, result="NOT FOUND user does not exist")
-
-        return user, HTTPStatus.OK
-
+        current_user = self.request_validity_handler.check_user_authorization()
+        return current_user, HTTPStatus.OK
 
 
 @ns.route('/<id>')
@@ -61,10 +58,11 @@ class User(Resource):
         self.user_service = UserService()
         self.request_validity_handler = RequestValidityHandler
 
-    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value])
+    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value,
+                                       HTTPStatus.FORBIDDEN.value, HTTPStatus.BAD_REQUEST.value])
     def get(self, id):
-        self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id)
+        self.request_validity_handler.check_user_authorization(AdminOrLeaderOrOwner(), id)
 
         user = self.user_service.get_user(id)
         if user is None:
@@ -80,11 +78,12 @@ class Subordinates(Resource):
         self.user_service = UserService()
         self.request_validity_handler = RequestValidityHandler
 
-    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value])
+    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value,
+                                       HTTPStatus.FORBIDDEN.value, HTTPStatus.BAD_REQUEST.value])
     @ns.expect(token_header_parser)
     def get(self, id):
-        self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id)
+        self.request_validity_handler.check_user_authorization(AdminOrLeaderOwner(), id)
         self.request_validity_handler.check_user_existence(id)
 
         subordinates = self.user_service.get_user_subordinates(id)
@@ -93,20 +92,18 @@ class Subordinates(Resource):
 
         return subordinates, HTTPStatus.OK
 
-
-    @ns.marshal_with(user_model, code=[HTTPStatus.CREATED.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value, HTTPStatus.BAD_REQUEST.value])
+    # o co chodzi
+    @ns.marshal_with(user_model, code=[HTTPStatus.CREATED.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value,
+                                       HTTPStatus.BAD_REQUEST.value, HTTPStatus.FORBIDDEN.value])
     @ns.expect(subordinate_input)
     def post(self, id):
         subordinate_data = subordinate_input.parse_args(request)
         if subordinate_data['subordinate_id'] is None:
             abort(400, result='BAD REQUEST specify subordinate id.')
 
-        current_id = self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id)
         self.request_validity_handler.check_user_existence(id)
-
-        if current_id != id:
-            abort(403, result="User is not allowed to perform this operation.")
+        current = self.request_validity_handler.check_user_authorization(AdminOrLeaderOwner(), id)
 
         subordinate = self.user_service.get_user(subordinate_data['subordinate_id'])
         if subordinate is None:
@@ -124,14 +121,12 @@ class Subordinate(Resource):
         self.user_service = UserService()
         self.request_validity_handler = RequestValidityHandler
 
-    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value])
+    @ns.marshal_with(user_model, code=[HTTPStatus.OK.value, HTTPStatus.NOT_FOUND.value, HTTPStatus.UNAUTHORIZED.value,
+                                       HTTPStatus.BAD_REQUEST.value, HTTPStatus.FORBIDDEN.value])
     def delete(self, id, subordinate_id):
-        current_id = self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id, subordinate_id)
+        self.request_validity_handler.check_user_authorization(AdminOrLeaderOwner(), id)
         self.request_validity_handler.check_user_existence(id)
-
-        if current_id != id:
-            abort(403, result="User is not allowed to perform this operation.")
 
         subordinate = self.user_service.get_user(subordinate_id)
 
@@ -140,7 +135,7 @@ class Subordinate(Resource):
 
         self.user_service.delete_subordinate(id, subordinate_id)
 
-        return subordinate, HTTPStatus.OK
+        return subordinate, HTTPStatus.NO_CONTENT
 
 
 @ns.route('/<id>/recordings')
@@ -152,10 +147,11 @@ class UserRecordings(Resource):
         self.recording_service = RecordingsService()
         self.request_validity_handler = RequestValidityHandler
 
-    @ns.marshal_with(recording_model, code=[HTTPStatus.OK.value, HTTPStatus.UNAUTHORIZED.value, HTTPStatus.NOT_FOUND])
+    @ns.marshal_with(recording_model, code=[HTTPStatus.OK.value, HTTPStatus.UNAUTHORIZED.value, HTTPStatus.NOT_FOUND,
+                                            HTTPStatus.BAD_REQUEST.value, HTTPStatus.FORBIDDEN.value])
     def get(self, id):
-        self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id)
+        self.request_validity_handler.check_user_authorization(AdminOrLeaderOrOwner(), id)
         self.request_validity_handler.check_user_existence(id)
 
         recordings = self.recording_service.get_user_recordings(id)
@@ -174,10 +170,11 @@ class UserRecording(Resource):
         self.recording_service = RecordingsService()
         self.request_validity_handler = RequestValidityHandler
 
-    @ns.marshal_with(recording_model, code=[HTTPStatus.OK.value, HTTPStatus.UNAUTHORIZED.value, HTTPStatus.NOT_FOUND])
+    @ns.marshal_with(recording_model, code=[HTTPStatus.OK.value, HTTPStatus.UNAUTHORIZED.value, HTTPStatus.NOT_FOUND.value,
+                                            HTTPStatus.BAD_REQUEST.value, HTTPStatus.FORBIDDEN.value])
     def get(self, id, recording_id):
-        self.request_validity_handler.check_user_authorization()
         self.request_validity_handler.check_if_valid_id(id, recording_id)
+        self.request_validity_handler.check_user_authorization(AdminOrLeaderOrOwner(), id)
         self.request_validity_handler.check_user_existence(id)
 
         recording = self.recording_service.get_user_recording(id, recording_id)
