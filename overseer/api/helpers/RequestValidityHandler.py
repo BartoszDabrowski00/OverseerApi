@@ -25,14 +25,12 @@ class RequestValidityHandler:
         if current is None:
             abort(404, result='NOT FOUND user does not exist')
 
-        print(current["_id"])
         if role_handler is None:
             return current
 
         if role_handler.has_access(current, owner_id):
             return current
 
-        print(current["role"])
         abort(403, result="FORBIDDEN user is not allowed to perform this operation")
 
     @classmethod
