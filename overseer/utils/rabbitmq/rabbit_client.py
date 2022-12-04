@@ -35,7 +35,8 @@ class RabbitClient:
             host=host,
             port=self.config.get("amqp", "port"),
             virtual_host=self.config.get("amqp", "vhost"),
-            credentials=PlainCredentials(self.config.get("amqp", "username"), self.config.get("amqp", "password"))
+            credentials=PlainCredentials(self.config.get("amqp", "username"), self.config.get("amqp", "password")),
+            heartbeat=self.config.get("amqp", "heartbeat")
         ))
         self.channel = self.connection.channel()
 

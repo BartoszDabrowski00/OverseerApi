@@ -18,6 +18,7 @@ port="5672"
 username="guest"
 password="guest"
 vhost="/"
+heartbeat=0
 recordings_exchange="recordings"
 recordings_exchange_type="topic"
 recordings_route="new"
