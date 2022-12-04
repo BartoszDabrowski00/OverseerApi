@@ -54,7 +54,7 @@ class RabbitClient:
     def publish_new_recording(self, document_id: ObjectId) -> None:
         log.info(f'Publishing new recording message to'
                  f' exchange {self.recordings_exchange} route {self.recordings_route} queue {self.recordings_new_queue}')
-        if self.channel.is_closed:
+        if self.channel.is_closed or self.connection.is_closed:
             log.info(f'RMQ Connection closed, reconnecting')
             self.connect_to_rmq()
 
