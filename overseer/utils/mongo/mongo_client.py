@@ -183,7 +183,6 @@ class MongoClient:
 
         db = cls.client.get_database(cls.overseer_db)
         collection = db.get_collection(cls.overseer_users_collection)
-        print(user_id, user_role.value)
         collection.update_one(
             {'_id': ObjectId(user_id)},
             {'$set': {'role': user_role.value}}
