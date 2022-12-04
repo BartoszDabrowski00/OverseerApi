@@ -14,5 +14,7 @@ cfg = Config()
 if __name__ == '__main__':
     server_port = cfg.get("server", "port")
     host = cfg.get("server", "host")
+    logging.basicConfig(level=logging.NOTSET)
+    logging.getLogger('pika').setLevel(logging.WARNING)
     log.info(f'Starting on host {host} and port {server_port}')
     app.run(debug=True, host=host, port=server_port)
