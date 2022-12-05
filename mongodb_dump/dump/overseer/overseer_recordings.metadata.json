@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"79db9b7c9dcd4968a173b609d182078a","collectionName":"overseer_recordings","type":"collection"}

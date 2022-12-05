@@ -5,8 +5,6 @@ services:
     image: mongo:5.0.12
     container_name: 'overseer_mongo'
     restart: always
-    volumes:
-      - ./mongodb-data:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
@@ -25,11 +23,7 @@ services:
       - overseer_net
 
   api:
-    image: api
-    build:
-      context: .
-      dockerfile: Dockerfile
-
+    image: bartoszdab/overseer_api
     container_name: 'overseer_api'
     restart: on-failure
     environment:
@@ -43,8 +37,9 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+
   model:
-    image: overseer_model
+    image: bartoszdab/overseer_model
     container_name: 'overseer_model'
     restart: on-failure
     environment:
@@ -72,10 +67,3 @@ services:
 networks:
   overseer_net:
     driver: bridge
-  metanet1-secrets:
-    driver: bridge
-secrets:
-   db_password:
-     file: metabase/db_password.txt
-   db_user:
-     file: metabase/db_user.txt
