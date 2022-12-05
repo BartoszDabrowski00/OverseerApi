@@ -1,5 +1,0 @@
-root root
-show dbs
-db.test
-db.adminCommand( {listDatabases:1} )
-"ok" : 0,         "errmsg" : "command listDatabases requires authentication",         "code" : 13,  exit
