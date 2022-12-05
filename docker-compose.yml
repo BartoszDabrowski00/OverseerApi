@@ -5,6 +5,8 @@ services:
     image: mongo:5.0.12
     container_name: 'overseer_mongo'
     restart: always
+    volumes:
+      - ./mongodb_dump/dump:/dump
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
